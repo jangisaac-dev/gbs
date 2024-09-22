@@ -13,21 +13,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    private SecurityScheme createAPIKeyScheme() {
-        return new SecurityScheme().type(SecurityScheme.Type.HTTP)
-                .bearerFormat("JWT")
-                .scheme("bearer");
-    }
+//    private SecurityScheme createAPIKeyScheme() {
+//        return new SecurityScheme().type(SecurityScheme.Type.HTTP)
+//                .bearerFormat("JWT")
+//                .scheme("bearer");
+//    }
 
-    private OpenApiCustomizer createOpenApiCustomizer(String title, String version) {
-        return openApi -> {
-            openApi.info(new Info().title(title).version(version));
-            openApi.schemaRequirement("bearerAuth", createAPIKeyScheme());
-            openApi.addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
-//            openApi.addServersItem(new Server().url("https://api.gamza.club").description("Production Server"));
-//            openApi.addServersItem(new Server().url("http://3.34.207.58:8080").description("TestServer Server"));
-        };
-    }
+//    private OpenApiCustomizer createOpenApiCustomizer(String title, String version) {
+//        return openApi -> {
+//            openApi.info(new Info().title(title).version(version));
+//            openApi.schemaRequirement("bearerAuth", createAPIKeyScheme());
+//            openApi.addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
+//        };
+//    }
 
     @Bean
     public GroupedOpenApi allApi() {
@@ -35,7 +33,7 @@ public class SwaggerConfig {
                 .group("all")
                 .pathsToMatch("/**")
                 .displayName("All API")
-                .addOpenApiCustomizer(createOpenApiCustomizer("모든 API", "v0.1"))
+//                .addOpenApiCustomizer(createOpenApiCustomizer("모든 API", "v0.1"))
                 .build();
     }
 }
