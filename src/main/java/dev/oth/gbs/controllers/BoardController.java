@@ -67,7 +67,6 @@ public class BoardController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Response.class))),
             @ApiResponse(responseCode = "404", description = "데이터를 찾을 수 없습니다."),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @PutMapping("/{id}")
     public ResponseEntity<Response<Board.BoardDto>> updateBoard(@PathVariable Long id, @RequestBody Board.BoardDto boardDto) {

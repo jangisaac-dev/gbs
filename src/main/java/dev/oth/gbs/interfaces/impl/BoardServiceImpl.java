@@ -53,14 +53,14 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Board.BoardDto updateBoard(Long id, Board.BoardDto boardDto) {
         Optional<Board.BoardEntity> optionalBoard = boardRepository.findById(id);
-        if (optionalBoard.isPresent()) {
-            Board.BoardEntity boardEntity = optionalBoard.get();
-            boardEntity.setTitle(boardDto.getTitle());
-            boardEntity.setDescription(boardDto.getDescription());
-            Board.BoardEntity updatedEntity = boardRepository.save(boardEntity);
-            return updatedEntity.toDto();
+        if (optionalBoard.isEmpty()) {
+            throw new RuntimeException("Board not found with id: " + id);
         }
-        throw new RuntimeException("Board not found with id: " + id);
+        Board.BoardEntity boardEntity = optionalBoard.get();
+        boardEntity.setTitle(boardDto.getTitle());
+        boardEntity.setDescription(boardDto.getDescription());
+        Board.BoardEntity updatedEntity = boardRepository.save(boardEntity);
+        return updatedEntity.toDto();
     }
 
     @Override
