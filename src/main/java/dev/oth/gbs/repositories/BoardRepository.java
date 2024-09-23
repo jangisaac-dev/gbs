@@ -1,8 +1,6 @@
 package dev.oth.gbs.repositories;
 
 import dev.oth.gbs.domain.Board;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
