@@ -3,6 +3,7 @@ package dev.oth.gbs.domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
 
@@ -10,11 +11,11 @@ import java.io.Serializable;
 /**
  *  BoardEntity 생성
  *  Board.BoardEntity boardEntity = new Board.BoardEntity(1L, "John Doe", 30);
- *
+ * -
  *  Convert to DTO
  *  Board.BoardDto boardDto = boardEntity.toDto();
  *  System.out.println("DTO: " + boardDto.getTitle() + ", " + boardDto.getDescription());
- *
+ * -
  *  Convert to VO
  *  Board.BoardVo boardVo = boardEntity.toVo();
  *  System.out.println("VO: " + boardVo.getTitle() + ", " + boardVo.getDescription());
@@ -38,14 +39,20 @@ public class Board {
         @Column(nullable = false)
         private String description;
 
-        // Convert to DTO (without id)
+        @Column(nullable = false)
+        @ColumnDefault("0")
+        private Long viewCnt = 0L;
+
         public BoardDto toDto() {
             return new BoardDto(this.title, this.description);
         }
 
-        // Convert to VO (without id)
-        public BoardVo toVo() {
-            return new BoardVo(this.title, this.description);
+        public BoardDetailVo toDetailVo() {
+            return new BoardDetailVo(this.title, this.description, this.viewCnt);
+        }
+
+        public BoardListVo toListVo() {
+            return new BoardListVo(this.title, this.viewCnt);
         }
     }
 
@@ -56,38 +63,52 @@ public class Board {
     public static class BoardBaseObject {
         @Schema(description = "게시물 이름", example = "공지사항")
         protected String title;
-
-        @Schema(description = "게시물 내용", example = "이것은 게시판 내용입니다.")
-        protected String description;
     }
 
     @Schema(description = "게시판 DTO 모델")
     @Getter
     public static class BoardDto extends BoardBaseObject {
-        public BoardDto(String title, String description) {
-            super(title, description);
-        }
 
-        public BoardDto() {
+        @Schema(description = "게시물 내용", example = "이것은 게시판 내용입니다.")
+        protected String description;
+
+        public BoardDto(String title, String description) {
+            super(title);
+            this.description = description;
         }
     }
 
-    @Schema(description = "게시판 VO 모델")
+    @Schema(description = "게시판 상세 VO 모델")
     @Getter
-    public static class BoardVo extends BoardBaseObject {
-        public BoardVo(String title, String description) {
-            super(title, description);
-        }
-        public BoardVo() {
+    public static class BoardDetailVo extends BoardBaseObject {
 
-        }
 
-        @Override
-        public String toString() {
-            return "BoardVo{" +
-                    "title='" + title + '\'' +
-                    ", description='" + description + '\'' +
-                    '}';
+        @Schema(description = "게시물 내용", example = "이것은 게시판 내용입니다.")
+        protected String description;
+
+        @Schema(description = "조회수", example = "0")
+        private final Long viewCnt;
+
+
+        public BoardDetailVo(String title, String description, Long viewCnt) {
+            super(title);
+            this.description = description;
+            this.viewCnt = viewCnt;
+        }
+    }
+
+
+    @Schema(description = "게시판 리스트 VO 모델")
+    @Getter
+    public static class BoardListVo extends BoardBaseObject {
+
+        @Schema(description = "조회수", example = "0")
+        private final Long viewCnt;
+
+
+        public BoardListVo(String title, Long viewCnt) {
+            super(title);
+            this.viewCnt = viewCnt;
         }
     }
 
@@ -96,7 +117,11 @@ public class Board {
         return entity.toDto();
     }
 
-    public static BoardVo convertEntityToVo(BoardEntity entity) {
-        return entity.toVo();
+    public static BoardDetailVo convertEntityToDetailVo(BoardEntity entity) {
+        return entity.toDetailVo();
+    }
+
+    public static BoardListVo convertEntityToListVo(BoardEntity entity) {
+        return entity.toListVo();
     }
 }

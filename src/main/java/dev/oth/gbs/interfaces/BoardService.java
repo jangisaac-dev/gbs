@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface BoardService {
     Board.BoardDto createBoard(Board.BoardDto boardDto);
-    Optional<Board.BoardDto> getBoardById(Long id);
-    List<Board.BoardVo> getAllBoards();
+    Optional<Board.BoardDetailVo> getBoardById(Long id);
+    List<Board.BoardListVo> getAllBoards();
     Board.BoardDto updateBoard(Long id, Board.BoardDto boardDto);
     void deleteBoard(Long id);
 }

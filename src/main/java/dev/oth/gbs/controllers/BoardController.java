@@ -7,9 +7,7 @@ import dev.oth.gbs.domain.Board;
 import dev.oth.gbs.interfaces.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperties;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +41,10 @@ public class BoardController {
             @ApiResponse(responseCode = "404", description = "데이터를 찾을 수 없습니다.")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Response<Board.BoardDto>> getBoardById(@PathVariable Long id) {
+    public ResponseEntity<Response<Board.BoardDetailVo>> getBoardById(@PathVariable Long id) {
         return boardService.getBoardById(id)
-                .map(boardDto -> Response.<Board.BoardDto>ok().withData(boardDto).toResponseEntity())
-                .orElse(Response.<Board.BoardDto>error(Error.RESOURCE_NOT_FOUND).toResponseEntity());
+                .map(boardDto -> Response.<Board.BoardDetailVo>ok().withData(boardDto).toResponseEntity())
+                .orElse(Response.<Board.BoardDetailVo>error(Error.RESOURCE_NOT_FOUND).toResponseEntity());
     }
 
     @Operation(summary = "모든 게시물 조회", description = "모든 게시물을 가져옵니다.")
@@ -55,14 +53,14 @@ public class BoardController {
             @ApiResponse(responseCode = "200", description = "성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Response.class,
-                                    oneOf = { Board.BoardVo.class }))),
+                                    oneOf = { Board.BoardListVo.class }))),
             @ApiResponse(responseCode = "404", description = "데이터를 찾을 수 없습니다.",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Response.class)))
     })
-    public ResponseEntity<Response<List<Board.BoardVo>>> getAllBoards() {
-        List<Board.BoardVo> boards = boardService.getAllBoards();
-        return Response.<List<Board.BoardVo>>ok().withData(boards).toResponseEntity();
+    public ResponseEntity<Response<List<Board.BoardListVo>>> getAllBoards() {
+        List<Board.BoardListVo> boards = boardService.getAllBoards();
+        return Response.<List<Board.BoardListVo>>ok().withData(boards).toResponseEntity();
     }
 
     @Operation(summary = "게시물 수정", description = "ID로 게시물을 수정합니다.")

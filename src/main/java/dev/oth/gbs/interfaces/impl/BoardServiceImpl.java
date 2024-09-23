@@ -5,6 +5,8 @@ import dev.oth.gbs.interfaces.BoardService;
 import dev.oth.gbs.repositories.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,14 +31,22 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Optional<Board.BoardDto> getBoardById(Long id) {
-        return boardRepository.findById(id).map(Board.BoardEntity::toDto);
+    @Transactional
+    public Optional<Board.BoardDetailVo> getBoardById(Long id) {
+        Optional<Board.BoardEntity> result = boardRepository.findById(id);
+        result.ifPresent(boardEntity -> updateViews(boardEntity.getId()));
+        return result.map(Board.BoardEntity::toDetailVo);
+    }
+
+    @Transactional
+    public void updateViews(Long id) {
+        boardRepository.updateViews(id);
     }
 
     @Override
-    public List<Board.BoardVo> getAllBoards() {
+    public List<Board.BoardListVo> getAllBoards() {
         return boardRepository.findAll().stream()
-                .map(Board.BoardEntity::toVo)
+                .map(Board.BoardEntity::toListVo)
                 .collect(Collectors.toList());
     }
 
