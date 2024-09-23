@@ -6,14 +6,18 @@ import dev.oth.gbs.Error;
 import dev.oth.gbs.domain.Board;
 import dev.oth.gbs.interfaces.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -47,19 +51,24 @@ public class BoardController {
                 .orElse(Response.<Board.BoardDetailVo>error(Error.RESOURCE_NOT_FOUND).toResponseEntity());
     }
 
-    @Operation(summary = "모든 게시물 조회", description = "모든 게시물을 가져옵니다.")
+    @Operation(summary = "모든 게시물 조회", description = "게시물 리스트를 가져옵니다.")
     @GetMapping
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Response.class,
-                                    oneOf = { Board.BoardListVo.class }))),
-            @ApiResponse(responseCode = "404", description = "데이터를 찾을 수 없습니다.",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Response.class)))
+            @ApiResponse(responseCode = "200"),
     })
-    public ResponseEntity<Response<List<Board.BoardListVo>>> getAllBoards() {
-        List<Board.BoardListVo> boards = boardService.getAllBoards();
+    public ResponseEntity<Response<List<Board.BoardListVo>>> getAllBoards(
+            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
+            @Nullable @Param("page") Integer page,
+            @Parameter(description = "한 페이지에 표시할 게시물 수", example = "10")
+            @Nullable @Param("size") Integer size
+    ) {
+        List<Board.BoardListVo> boards;
+        if (page == null || size == null) {
+            boards = boardService.getAllBoards();
+        }
+        else {
+            boards = boardService.getBoards(page, size);
+        }
         return Response.<List<Board.BoardListVo>>ok().withData(boards).toResponseEntity();
     }
 

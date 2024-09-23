@@ -14,7 +14,7 @@ import java.util.Map;
 @Schema(description = "API 응답 모델")
 public class Response<T> {
 
-    @Schema(description = "에러 정보")
+    @Schema(description = "에러 정보", enumAsRef = true)
     private final Error error;
 
     @Schema(description = "응답 데이터")

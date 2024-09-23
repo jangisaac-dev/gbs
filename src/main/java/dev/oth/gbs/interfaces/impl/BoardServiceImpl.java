@@ -51,6 +51,15 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public List<Board.BoardListVo> getBoards(Integer page, Integer size) {
+        int offset = (page - 1) * size;
+        int limit = size;
+        return boardRepository.findAllWithPagination(offset, limit).stream()
+                .map(Board.BoardEntity::toListVo)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Board.BoardDto updateBoard(Long id, Board.BoardDto boardDto) {
         Optional<Board.BoardEntity> optionalBoard = boardRepository.findById(id);
         if (optionalBoard.isEmpty()) {
