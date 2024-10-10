@@ -1,8 +1,8 @@
 package dev.oth.gbs.controllers;
 
 
-import dev.oth.gbs.Response;
-import dev.oth.gbs.Error;
+import dev.oth.gbs.common.Response;
+import dev.oth.gbs.common.Error;
 import dev.oth.gbs.domain.Board;
 import dev.oth.gbs.interfaces.BoardService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,4 +1,4 @@
-package dev.oth.gbs;
+package dev.oth.gbs.common;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;

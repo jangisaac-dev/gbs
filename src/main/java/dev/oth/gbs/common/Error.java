@@ -1,4 +1,4 @@
-package dev.oth.gbs;
+package dev.oth.gbs.common;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +17,9 @@ public enum Error {
 
     UPDATE_FAILED(2002, "변경에 실패했습니다."),
 
-    DELETE_FAILED(2003, "삭제에 실패했습니다.");
+    DELETE_FAILED(2003, "삭제에 실패했습니다."),
+
+    UNAUTHORIZED(4001, "잘못된 로그인 정보입니다.");
 
     @Schema(description = "에러 코드", example = "1000")
     private final int code;
