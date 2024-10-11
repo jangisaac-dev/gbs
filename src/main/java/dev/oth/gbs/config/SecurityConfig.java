@@ -1,6 +1,7 @@
 package dev.oth.gbs.config;
 
 import dev.oth.gbs.common.Constants;
+import dev.oth.gbs.enums.UserRole;
 import dev.oth.gbs.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,13 +28,17 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(Constants.adminIgnorePaths).hasAuthority("ROLE_ADMIN")  // 로그인과 회원가입은 예외 처리
+                    .requestMatchers(Constants.adminIgnorePaths).hasAuthority(UserRole.ROLE_ADMIN.name())
                     .requestMatchers(Constants.authIgnorePaths).permitAll()  // 로그인과 회원가입은 예외 처리
                     .anyRequest().authenticated()  // 그 외 모든 요청은 인증 필요
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // JWT를 사용하므로 세션 사용 안 함
 
+
+        
+
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -49,7 +54,7 @@ public class SecurityConfig {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         manager.createUser(User.withUsername("admin")
                 .password(passwordEncoder().encode("password"))
-                .roles("USER")
+                .roles("ADMIN", "USER")  // ADMIN 권한 추가
                 .build());
         return manager;
     }

@@ -73,19 +73,4 @@ public class AuthController {
         }
     }
 
-
-    @Operation(summary = "관리자 전용 - 전체 사용자 목록 반환", description = "관리자 권한을 가진 사용자만 전체 사용자 목록을 조회할 수 있습니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.UserVo.class))),
-            @ApiResponse(responseCode = "403", description = "접근 권한이 없습니다.")
-    })
-    @PreAuthorize("hasRole('ROLE_ADMIN')")  // ADMIN 권한이 있는 사용자만 접근 가능
-    @GetMapping("/admin/users")
-    public ResponseEntity<Response<List<User.UserVo>>> getAllUsers() {
-        List<User.UserEntity> users = userService.getAllUsers();
-        List<User.UserVo> userListVos = users.stream()
-                .map(User.UserEntity::toVo)
-                .collect(Collectors.toList());
-        return Response.<List<User.UserVo>>ok().withData(userListVos).toResponseEntity();
-    }
 }
