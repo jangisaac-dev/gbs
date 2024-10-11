@@ -8,7 +8,8 @@ import java.util.List;
 
 public enum UserRole {
     ROLE_USER,    // 일반 사용자
-    ROLE_ADMIN;    // 관리자
+    ROLE_MANAGER,    // 관리자
+    ROLE_ADMIN;    // 슈퍼 관리자
 
 
     // 역할에 따른 권한 부여

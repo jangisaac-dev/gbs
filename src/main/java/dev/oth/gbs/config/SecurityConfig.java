@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
+    //여기에서 권한별로 설정이 필요함...!
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http
@@ -33,9 +34,6 @@ public class SecurityConfig {
                     .anyRequest().authenticated()  // 그 외 모든 요청은 인증 필요
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // JWT를 사용하므로 세션 사용 안 함
-
-
-        
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 

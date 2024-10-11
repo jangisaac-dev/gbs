@@ -22,7 +22,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/boards")
-@PreAuthorize("hasAuthority('ROLE_USER')")
 public class BoardController {
 
     @Autowired
@@ -58,9 +57,9 @@ public class BoardController {
             @ApiResponse(responseCode = "200"),
     })
     public ResponseEntity<Response<List<Board.BoardListVo>>> getAllBoards(
-            @Parameter(description = "페이지 번호 (1부터 시작)", example = "1")
+            @Parameter(description = "페이지 번호 (1부터 시작), page < 0 = 1", example = "1")
             @Nullable @Param("page") Integer page,
-            @Parameter(description = "한 페이지에 표시할 게시물 수", example = "10")
+            @Parameter(description = "한 페이지에 표시할 게시물 수, size < 1 = 1", example = "10")
             @Nullable @Param("size") Integer size
     ) {
         List<Board.BoardListVo> boards;
@@ -68,6 +67,8 @@ public class BoardController {
             boards = boardService.getAllBoards();
         }
         else {
+            page = Math.max(page, 1);
+            size = Math.max(size, 1);
             boards = boardService.getBoards(page, size);
         }
         return Response.<List<Board.BoardListVo>>ok().withData(boards).toResponseEntity();
