@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 @RequestMapping("/api/admin/auth")
 public class AdminAuthController {
 
@@ -34,7 +35,6 @@ public class AdminAuthController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = User.UserVo.class))),
             @ApiResponse(responseCode = "403", description = "접근 권한이 없습니다.")
     })
-    @PreAuthorize("hasRole('ROLE_ADMIN')")  // ADMIN 권한이 있는 사용자만 접근 가능
     @GetMapping("/admin/users")
     public ResponseEntity<Response<List<User.UserVo>>> getAllUsers() {
         List<User.UserEntity> users = userService.getAllUsers();

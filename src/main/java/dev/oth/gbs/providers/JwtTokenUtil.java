@@ -2,7 +2,9 @@ package dev.oth.gbs.providers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import dev.oth.gbs.domain.TokenDetailModel;
 import dev.oth.gbs.domain.TokenModel;
+import dev.oth.gbs.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -42,34 +44,38 @@ public class JwtTokenUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenModel issueToken(Long id, String email) {
+    public TokenModel issueToken(TokenDetailModel model) {
         return new TokenModel(
-                createAccessToken(id, email),
-                createRefreshToken(id, email)
+                createAccessToken(model),
+                createRefreshToken(model)
         );
     }
     public TokenModel reIssueToken(String token) {
 
-        JsonObject values = extractValue(token);
+//        JsonObject values = extractValue(token);
+        TokenDetailModel model = extractValue(token);
 
         return new TokenModel(
-                createAccessToken(values.get("id").getAsLong(), values.get("email").getAsString()),
-                createRefreshToken(values.get("id").getAsLong(), values.get("email").getAsString())
+                createAccessToken(model),
+                createRefreshToken(model)
         );
     }
 
-    public String createAccessToken(Long id, String email) {
-        return this.createToken(id, email, accessTokenValidTime);
+    public String createAccessToken(TokenDetailModel model) {
+        return this.createToken(model, accessTokenValidTime);
     }
 
-    public String createRefreshToken(Long id, String email) {
-        return this.createToken(id, email, refreshTokenValidTime);
+    public String createRefreshToken(TokenDetailModel model) {
+        return this.createToken(model, refreshTokenValidTime);
     }
 
-    public String createToken(Long id, String email, long tokenValid) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("id", id);
-        jsonObject.addProperty("email", email);
+    public String createToken(TokenDetailModel model, long tokenValid) {
+
+        JsonObject jsonObject = new Gson().toJsonTree(model).getAsJsonObject();
+//        JsonObject jsonObject = new JsonObject();
+//        jsonObject.addProperty("id", model.i);
+//        jsonObject.addProperty("role", role.name());
+//        jsonObject.addProperty("email", email);
 
         Claims claims = Jwts.claims().subject(encrypt(jsonObject.toString())).build();
         Date date = new Date();
@@ -122,25 +128,38 @@ public class JwtTokenUtil {
                 .build();
     }
 
-    public JsonObject extractValue(String token)  {
+    public TokenDetailModel extractValue(String token)  {
         String subject = extractAllClaims(token).getSubject();
         String decrypted = decrypt(subject);
-        return new Gson().fromJson(decrypted, JsonObject.class);
+        return new Gson().fromJson(decrypted, TokenDetailModel.class);
     }
 
-    // validateToken 메서드 추가
-    public boolean validateToken(String token, String username) {
+    public boolean validateToken(String token, String userEmail) {
         try {
-            JsonObject tokenData = extractValue(token);
-            String tokenUsername = tokenData.get("id").getAsString();
-            Claims claims = extractAllClaims(token);
+            TokenDetailModel tokenData = extractValue(token);
+            String tokenId = tokenData.getEmail();
 
-            // 토큰의 사용자 정보가 일치하고, 토큰이 만료되지 않았는지 확인
-            return (tokenUsername.equals(username) && !isTokenExpired(claims));
+            // 토큰에서 추출된 사용자 이메일과 주어진 username 비교
+            if (!tokenId.equals(userEmail)) {
+                System.out.println("Token validation failed: Username does not match : [" + tokenId + "] : [" + userEmail + "]");
+                return false;
+            }
+
+            // Claims에서 만료 시간 확인
+            Claims claims = extractAllClaims(token);
+            if (isTokenExpired(claims)) {
+                System.out.println("Token validation failed: Token is expired");
+                return false;
+            }
+
+            // 토큰이 유효하면 true 반환
+            return true;
         } catch (Exception e) {
-            return false;  // 파싱 중 예외가 발생하면 토큰을 유효하지 않다고 판단
+            System.out.println("Error during token validation: " + e.getMessage());
+            return false;
         }
     }
+
 
     // 토큰이 만료되었는지 확인
     private boolean isTokenExpired(Claims claims) {

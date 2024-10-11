@@ -1,12 +1,15 @@
 package dev.oth.gbs.controllers;
 
+import com.google.gson.JsonObject;
 import dev.oth.gbs.common.Response;
 import dev.oth.gbs.common.Error;
+import dev.oth.gbs.domain.TokenDetailModel;
 import dev.oth.gbs.domain.User;
 import dev.oth.gbs.providers.JwtTokenUtil;
 import dev.oth.gbs.interfaces.UserService;
 import dev.oth.gbs.domain.TokenModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +54,7 @@ public class AuthController {
         // 이메일과 비밀번호로 로그인 처리
         User.UserEntity user = userService.validateUser(loginRequest.getEmail(), loginRequest.getPassword());
         if (user != null) {
-            TokenModel tokenModel = jwtTokenUtil.issueToken(user.getId(), user.getEmail());
+            TokenModel tokenModel = jwtTokenUtil.issueToken(new TokenDetailModel(user));
             return Response.<TokenModel>ok().withData(tokenModel).toResponseEntity();
         } else {
             return Response.<TokenModel>error(Error.UNAUTHORIZED).toResponseEntity();
@@ -73,4 +76,24 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "[테스트]토큰 체크", description = "리프레시 토큰을 통해 액세스 토큰을 갱신합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenModel.class))),
+            @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+
+    // 헤더에서 Authorization 값을 추출하고 리턴하는 메서드
+    @GetMapping("/extract-token")
+    public ResponseEntity<String> extractTokenFromHeader(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        // Bearer 토큰 형태에서 실제 토큰 값만 추출
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);  // "Bearer " 이후의 토큰 부분만 추출
+            TokenDetailModel extract = jwtTokenUtil.extractValue(token);
+            System.out.println("extract : " + extract);
+            boolean validate = jwtTokenUtil.validateToken(token, extract.getId().toString());
+            System.out.println("validate = " + validate);
+            return ResponseEntity.ok("Extracted Token: " + token);
+        }
+        return ResponseEntity.badRequest().body("Authorization header is missing or invalid.");
+    }
 }

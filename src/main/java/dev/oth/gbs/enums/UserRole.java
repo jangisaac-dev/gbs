@@ -13,6 +13,6 @@ public enum UserRole {
 
     // 역할에 따른 권한 부여
     public List<GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(this.name()));
+        return List.of(new SimpleGrantedAuthority(this.name()));
     }
 }

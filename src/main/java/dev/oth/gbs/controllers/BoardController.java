@@ -15,12 +15,14 @@ import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/boards")
+@PreAuthorize("hasAuthority('ROLE_USER')")
 public class BoardController {
 
     @Autowired
@@ -56,7 +58,7 @@ public class BoardController {
             @ApiResponse(responseCode = "200"),
     })
     public ResponseEntity<Response<List<Board.BoardListVo>>> getAllBoards(
-            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
+            @Parameter(description = "페이지 번호 (1부터 시작)", example = "1")
             @Nullable @Param("page") Integer page,
             @Parameter(description = "한 페이지에 표시할 게시물 수", example = "10")
             @Nullable @Param("size") Integer size
