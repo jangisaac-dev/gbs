@@ -5,6 +5,7 @@ import dev.oth.gbs.enums.UserRole;
 import dev.oth.gbs.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,21 +20,56 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Map;
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
+    private final JwtRequestFilter jwtRequestFilter;
+    private final Map<String, String> urlRoleMap;
+
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter, Map<String, String> urlRoleMap) {
+        this.jwtRequestFilter = jwtRequestFilter;
+        this.urlRoleMap = urlRoleMap;
+        System.out.println("SecurityConfig initialize");
+    }
+
     //여기에서 권한별로 설정이 필요함...!
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
+//        http
+//            .csrf(AbstractHttpConfigurer::disable)
+//            .authorizeHttpRequests(auth -> auth
+////                    .requestMatchers(Constants.adminIgnorePaths).hasAuthority(UserRole.ROLE_ADMIN.name())
+//                    .requestMatchers(Constants.swaggerPaths).permitAll()  // 로그인과 회원가입은 예외 처리
+//                    .anyRequest().authenticated()  // 그 외 모든 요청은 인증 필요
+////                    .anyRequest().permitAll()  // 그 외 모든 요청은 인증 필요
+//            )
+//            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // JWT를 사용하므로 세션 사용 안 함
+//
+//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(Constants.adminIgnorePaths).hasAuthority(UserRole.ROLE_ADMIN.name())
-                    .requestMatchers(Constants.authIgnorePaths).permitAll()  // 로그인과 회원가입은 예외 처리
-                    .anyRequest().authenticated()  // 그 외 모든 요청은 인증 필요
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // JWT를 사용하므로 세션 사용 안 함
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> {
+                    urlRoleMap.forEach((url, role) -> {
+                        System.out.println("url: " + url + ", role: " + role);
+                        if (UserRole.ROLE_PUBLIC.name().equals(role)) {
+                            auth.requestMatchers(url).permitAll(); // 공개 URL은 인증 없이 허용
+                        } else {
+                            auth.requestMatchers(url).hasAuthority(role); // 특정 권한이 필요한 URL
+                        }
+                    });
+                    auth.requestMatchers(Constants.swaggerPaths).permitAll();
+                    auth.anyRequest().authenticated(); // 그 외 모든 요청은 인증 필요
+                })
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -61,4 +97,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

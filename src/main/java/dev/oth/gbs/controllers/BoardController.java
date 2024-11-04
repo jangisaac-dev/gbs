@@ -4,6 +4,8 @@ package dev.oth.gbs.controllers;
 import dev.oth.gbs.common.Response;
 import dev.oth.gbs.common.Error;
 import dev.oth.gbs.domain.Board;
+import dev.oth.gbs.enums.UserRole;
+import dev.oth.gbs.filter.RequiredRole;
 import dev.oth.gbs.interfaces.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/boards")
+@RequiredRole(UserRole.ROLE_ANY)
 public class BoardController {
 
     @Autowired

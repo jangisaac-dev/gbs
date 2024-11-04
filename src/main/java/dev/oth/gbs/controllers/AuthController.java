@@ -5,6 +5,8 @@ import dev.oth.gbs.common.Response;
 import dev.oth.gbs.common.Error;
 import dev.oth.gbs.domain.TokenDetailModel;
 import dev.oth.gbs.domain.User;
+import dev.oth.gbs.enums.UserRole;
+import dev.oth.gbs.filter.RequiredRole;
 import dev.oth.gbs.providers.JwtTokenUtil;
 import dev.oth.gbs.interfaces.UserService;
 import dev.oth.gbs.domain.TokenModel;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredRole(UserRole.ROLE_PUBLIC)
 public class AuthController {
 
     @Autowired
@@ -66,6 +69,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenModel.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패")
     })
+    @RequiredRole(UserRole.ROLE_ANY)
     @PostMapping("/refresh")
     public ResponseEntity<Response<TokenModel>> refreshToken(@RequestBody String refreshToken) {
         try {
@@ -81,7 +85,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenModel.class))),
             @ApiResponse(responseCode = "401", description = "인증 실패")
     })
-
+    @RequiredRole(UserRole.ROLE_ANY)
     // 헤더에서 Authorization 값을 추출하고 리턴하는 메서드
     @GetMapping("/extract-token")
     public ResponseEntity<String> extractTokenFromHeader(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {

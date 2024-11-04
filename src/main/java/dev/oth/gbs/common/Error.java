@@ -26,6 +26,7 @@ public enum Error {
     DUPLICATE_KEY(3005, "중복된 키가 있습니다."),
 
     UNAUTHORIZED(4001, "잘못된 로그인 정보입니다."),
+    UNAUTHORIZED_NULL(4002, "잘못된 로그인 정보입니다.(NULL)"),
     FORBIDDEN(4003, "권한이 없습니다."),
     BAD_REQUEST(4000, "잘못된 요청입니다."),
 

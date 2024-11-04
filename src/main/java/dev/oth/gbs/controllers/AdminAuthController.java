@@ -4,6 +4,8 @@ import dev.oth.gbs.common.Error;
 import dev.oth.gbs.common.Response;
 import dev.oth.gbs.domain.TokenModel;
 import dev.oth.gbs.domain.User;
+import dev.oth.gbs.enums.UserRole;
+import dev.oth.gbs.filter.RequiredRole;
 import dev.oth.gbs.interfaces.UserService;
 import dev.oth.gbs.providers.JwtTokenUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+@RequiredRole(UserRole.ROLE_ADMIN)
 @RequestMapping("/api/admin/auth")
 public class AdminAuthController {
 
