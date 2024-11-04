@@ -36,16 +36,14 @@ public class UrlRoleMappingConfig {
                 String role = requiredRole.value().length > 0 ? requiredRole.value()[0].name() : "ROLE_PUBLIC";
 
                 // PatternsRequestCondition Null 체크
-                if (requestMappingInfo.getPatternsCondition() != null) {
+                if (requestMappingInfo.getPatternsCondition() != null && !requestMappingInfo.getPatternsCondition().getPatterns().isEmpty()) {
                     requestMappingInfo.getPatternsCondition().getPatterns()
                             .forEach(url -> urlRoleMap.put(url, role));
-                } else {
-                    System.out.println("PatternsRequestCondition is null for: " + handlerMethod.getMethod().getName());
-                    // 대체 방식으로 URL 얻기
+                } else if (requestMappingInfo.getPathPatternsCondition() != null) {
                     requestMappingInfo.getPathPatternsCondition().getPatterns()
-                            .forEach(url ->
-                                    urlRoleMap.put(url.toString(), role)
-                            );
+                            .forEach(url -> urlRoleMap.put(url.toString(), role));
+                } else {
+                    System.out.println("No patterns found for: " + handlerMethod.getMethod().getName());
                 }
             }
         });
