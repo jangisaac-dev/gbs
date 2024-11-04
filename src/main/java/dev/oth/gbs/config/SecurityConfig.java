@@ -35,24 +35,6 @@ public class SecurityConfig {
         System.out.println("SecurityConfig initialize");
     }
 
-    //여기에서 권한별로 설정이 필요함...!
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
-//        http
-//            .csrf(AbstractHttpConfigurer::disable)
-//            .authorizeHttpRequests(auth -> auth
-////                    .requestMatchers(Constants.adminIgnorePaths).hasAuthority(UserRole.ROLE_ADMIN.name())
-//                    .requestMatchers(Constants.swaggerPaths).permitAll()  // 로그인과 회원가입은 예외 처리
-//                    .anyRequest().authenticated()  // 그 외 모든 요청은 인증 필요
-////                    .anyRequest().permitAll()  // 그 외 모든 요청은 인증 필요
-//            )
-//            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // JWT를 사용하므로 세션 사용 안 함
-//
-//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
