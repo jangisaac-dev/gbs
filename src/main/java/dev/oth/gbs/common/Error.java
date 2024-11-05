@@ -4,9 +4,6 @@ package dev.oth.gbs.common;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
@@ -28,6 +25,7 @@ public enum Error {
     UNAUTHORIZED(4001, "잘못된 로그인 정보입니다."),
     UNAUTHORIZED_NULL(4002, "잘못된 로그인 정보입니다.(NULL)"),
     FORBIDDEN(4003, "권한이 없습니다."),
+    SELF_ROLE_ERROR(4003, "권한이 없습니다."),
     BAD_REQUEST(4000, "잘못된 요청입니다."),
 
     METHOD_NOT_ALLOWED(405, "허용되지 않은 HTTP 메서드입니다."),

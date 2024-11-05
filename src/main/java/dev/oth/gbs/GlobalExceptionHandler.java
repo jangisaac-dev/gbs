@@ -1,11 +1,11 @@
 package dev.oth.gbs;
 
+import dev.oth.gbs.common.SelfRoleCheckException;
 import dev.oth.gbs.common.Error;
 import dev.oth.gbs.common.Response;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -101,5 +101,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response<Object>> handleGenericException(Exception ex) {
         System.out.println("GlobalExceptionHandler: Exception caught - " + ex.getMessage());
         return Response.error(Error.INTERNAL_SERVER_ERROR).toResponseEntity();
+    }
+
+    //여기는 RoleCheck부분에서 오류 발생시 오는 곳
+    @ExceptionHandler(SelfRoleCheckException.class)
+    public ResponseEntity<Response<Object>> handleAccessDeniedException(SelfRoleCheckException ex) {
+
+        return Response.error(Error.SELF_ROLE_ERROR).toResponseEntity();
     }
 }

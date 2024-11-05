@@ -8,6 +8,7 @@ import dev.oth.gbs.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
@@ -166,5 +167,13 @@ public class JwtTokenUtil {
         return claims.getExpiration().before(new Date());
     }
 
+    public TokenDetailModel getTokenDataFromRequest(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String jwt = authorizationHeader.substring(7);
+            return extractValue(jwt); // 토큰에서 사용자 정보 추출
+        }
+        return null;
+    }
 
 }

@@ -22,10 +22,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board.BoardDto createBoard(Board.BoardDto boardDto) {
+    public Board.BoardDto createBoard(Board.BoardCreateDao boardCreateDao) {
         Board.BoardEntity boardEntity = new Board.BoardEntity();
-        boardEntity.setTitle(boardDto.getTitle());
-        boardEntity.setDescription(boardDto.getDescription());
+        boardEntity.setTitle(boardCreateDao.getTitle());
+        boardEntity.setDescription(boardCreateDao.getDescription());
+        boardEntity.setOwnerId(boardCreateDao.getOwnerId());
         Board.BoardEntity savedEntity = boardRepository.save(boardEntity);
         return savedEntity.toDto();
     }

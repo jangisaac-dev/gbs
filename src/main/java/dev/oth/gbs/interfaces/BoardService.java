@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardService {
-    Board.BoardDto createBoard(Board.BoardDto boardDto);
+    Board.BoardDto createBoard(Board.BoardCreateDao boardCreateDao);
     Optional<Board.BoardDetailVo> getBoardById(Long id);
     List<Board.BoardListVo> getAllBoards();
     List<Board.BoardListVo> getBoards(Integer page, Integer size);

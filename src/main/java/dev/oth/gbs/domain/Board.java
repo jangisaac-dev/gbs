@@ -27,11 +27,14 @@ public class Board {
     @NoArgsConstructor
     @AllArgsConstructor
     @Entity(name = "tb_board")
-    public static class BoardEntity implements Serializable {
+    public static class BoardEntity implements Serializable, Ownable {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(nullable = false)
         private Long id;
+
+        @Column(nullable = false)
+        private Long ownerId;
 
         @Column(nullable = false)
         private String title;
@@ -53,6 +56,11 @@ public class Board {
 
         public BoardListVo toListVo() {
             return new BoardListVo(this.title, this.viewCnt);
+        }
+
+        @Override
+        public Long getOwnerId() {
+            return ownerId;
         }
     }
 
@@ -76,12 +84,29 @@ public class Board {
             super(title);
             this.description = description;
         }
+
+        public BoardCreateDao toCreateDao(Long ownerId) {
+            return new BoardCreateDao(title, description, ownerId);
+        }
+    }
+
+
+    @Getter
+    public static class BoardCreateDao extends BoardBaseObject {
+
+        protected String description;
+        protected Long ownerId;
+
+        public BoardCreateDao(String title, String description, Long ownerId) {
+            super(title);
+            this.description = description;
+            this.ownerId = ownerId;
+        }
     }
 
     @Schema(description = "게시판 상세 VO 모델")
     @Getter
     public static class BoardDetailVo extends BoardBaseObject {
-
 
         @Schema(description = "게시물 내용", example = "이것은 게시판 내용입니다.")
         protected String description;

@@ -35,7 +35,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
     @Lazy
-    private Map<String, String> urlRoleMap;
+    private Map<String, Map<String, String[]>> urlRoleMap;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -43,9 +43,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         System.out.println("JwtRequestFilter / " + request.getRequestURI());
         // URL이 /public 경로로 시작하면 토큰 검증 없이 통과
-        if (urlRoleMap.get(request.getRequestURI()).equals(UserRole.ROLE_PUBLIC.toString())) {
-            chain.doFilter(request, response);
-            return;
+
+        if (urlRoleMap.keySet().contains(request.getRequestURI())) {
+            if (urlRoleMap.get(request.getRequestURI()).equals(UserRole.ROLE_PUBLIC.toString())) {
+                chain.doFilter(request, response);
+                return;
+            }
         }
 
         final String authorizationHeader = request.getHeader("Authorization");
@@ -54,7 +57,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwt = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            System.out.println("log 1");
             jwt = authorizationHeader.substring(7);
             try {
                 TokenDetailModel tokenData = jwtTokenUtil.extractValue(jwt);
@@ -67,7 +69,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            System.out.println("log 2");
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
             // validateToken 확인용 로그 추가
