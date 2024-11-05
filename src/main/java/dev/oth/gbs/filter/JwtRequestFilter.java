@@ -79,22 +79,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 // SecurityContext에 설정되는 정보 로그 출력
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                if (urlRoleMap.get(request.getRequestURI()).equals(UserRole.ROLE_ANY.toString())) {
-                    System.out.println("This API for any user");
-                    chain.doFilter(request, response);
-                    return;
-                }
-                else {
-                    System.out.println("request.getRequestURI() : " + request.getRequestURI() + "/ urlRoleMap : " + urlRoleMap);
-                }
-
-                System.out.println("role : " + userDetails.getAuthorities());
                 System.out.println("getAuthorities : " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-            } else {
-                System.out.println("JWT validation failed for user: " + userDetails.getUsername());
             }
         }
-        System.out.println("log 3");
 
 
         chain.doFilter(request, response);
