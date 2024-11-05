@@ -44,9 +44,13 @@ public class SecurityConfig {
                         System.out.println("url: " + url + ", role: " + role);
                         if (UserRole.ROLE_PUBLIC.name().equals(role)) {
                             auth.requestMatchers(url).permitAll(); // 공개 URL은 인증 없이 허용
-                        } else {
-                            auth.requestMatchers(url).hasAuthority(role); // 특정 권한이 필요한 URL
+                            return;
                         }
+                        if (UserRole.ROLE_ANY.name().equals(role)) {
+                            auth.requestMatchers(url).authenticated(); // ROLE_ANY는 로그인된 사용자만 접근 가능
+                            return;
+                        }
+                        auth.requestMatchers(url).hasAuthority(role); // 특정 권한이 필요한 URL
                     });
                     auth.requestMatchers(Constants.swaggerPaths).permitAll();
                     auth.anyRequest().authenticated(); // 그 외 모든 요청은 인증 필요
@@ -64,16 +68,16 @@ public class SecurityConfig {
     }
 
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        // 사용자 정보를 메모리에 저장하는 간단한 예시
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("admin")
-                .password(passwordEncoder().encode("password"))
-                .roles("ADMIN", "USER")  // ADMIN 권한 추가
-                .build());
-        return manager;
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        // 사용자 정보를 메모리에 저장하는 간단한 예시
+//        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+//        manager.createUser(User.withUsername("admin")
+//                .password(passwordEncoder().encode("password"))
+//                .roles("ADMIN", "USER")  // ADMIN 권한 추가
+//                .build());
+//        return manager;
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

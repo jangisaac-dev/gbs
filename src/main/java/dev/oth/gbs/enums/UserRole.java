@@ -9,6 +9,7 @@ import java.util.List;
 public enum UserRole {
     ROLE_PUBLIC,    // 모든 사용자
     ROLE_ANY,    // 모든 사용자
+    ROLE_SELF,    // author 자신
     ROLE_USER,    // 일반 사용자
     ROLE_MANAGER,    // 관리자
     ROLE_ADMIN;    // 슈퍼 관리자

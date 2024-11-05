@@ -30,7 +30,6 @@ public class UrlRoleMappingConfig {
             RequiredRole requiredRole = handlerMethod.getMethodAnnotation(RequiredRole.class);
             if (requiredRole == null) {
                 requiredRole = handlerMethod.getBeanType().getAnnotation(RequiredRole.class);
-                System.out.println("requiredRole is Null");
             }
             if (requiredRole != null) {
                 String role = requiredRole.value().length > 0 ? requiredRole.value()[0].name() : "ROLE_PUBLIC";
