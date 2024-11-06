@@ -21,8 +21,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
-
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -35,17 +35,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
     @Lazy
-    private Map<String, Map<String, String[]>> urlRoleMap;
+    private Map<String, Map<String, String[]>> urlRoleMap; // URL과 HTTP 메서드로 권한을 확인
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        System.out.println("JwtRequestFilter / " + request.getRequestURI());
-        // URL이 /public 경로로 시작하면 토큰 검증 없이 통과
+        String requestUri = request.getRequestURI();
+        String httpMethod = request.getMethod();
 
-        if (urlRoleMap.keySet().contains(request.getRequestURI())) {
-            if (urlRoleMap.get(request.getRequestURI()).equals(UserRole.ROLE_PUBLIC.toString())) {
+        System.out.println("JwtRequestFilter / " + requestUri + " [Method: " + httpMethod + "]");
+
+        // URL이 /public 경로로 시작하면 토큰 검증 없이 통과
+        if (urlRoleMap.containsKey(requestUri) && urlRoleMap.get(requestUri).containsKey(httpMethod)) {
+            String[] roles = urlRoleMap.get(requestUri).get(httpMethod);
+
+            if (Arrays.asList(roles).contains(UserRole.ROLE_PUBLIC.toString())) {
                 chain.doFilter(request, response);
                 return;
             }
@@ -84,7 +89,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-
         chain.doFilter(request, response);
     }
 }
+
